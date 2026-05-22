@@ -42,18 +42,6 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  useEffect(() => {
-    const lenis = window.__cloveLenis;
-
-    if (!lenis) return;
-
-    if (isMobileMenuOpen) {
-      lenis.stop();
-    } else {
-      lenis.start();
-    }
-  }, [isMobileMenuOpen]);
-
   const handleLinkClick = (e, href) => {
     e.preventDefault();
     setIsMobileMenuOpen(false);

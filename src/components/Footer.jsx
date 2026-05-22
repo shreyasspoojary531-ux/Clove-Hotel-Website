@@ -1,33 +1,34 @@
-import React from 'react';
+import { useRef } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
+import { scrollToTarget, scrollToTop } from '../utils/scroll';
 export default function Footer() {
+  const footerRef = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: footerRef,
+    offset: ['start end', 'end end'],
+  });
+  const contentY = useTransform(scrollYProgress, [0, 1], [24, 0]);
+  const glowY = useTransform(scrollYProgress, [0, 1], [36, -12]);
+
   const handleScrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth'
-    });
+    scrollToTop();
   };
 
   const handleLinkClick = (e, id) => {
     e.preventDefault();
-    const targetElement = document.querySelector(id);
-    if (targetElement) {
-      const offset = 80;
-      const elementPosition = targetElement.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.pageYOffset - offset;
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: 'smooth'
-      });
-    }
+    scrollToTarget(id);
   };
 
   return (
-    <footer className="bg-[#070707] text-luxury-ivory border-t border-luxury-ivory/5 pt-20 pb-10 relative overflow-hidden">
+    <footer ref={footerRef} className="bg-[#070707] text-luxury-ivory border-t border-luxury-ivory/5 pt-20 pb-10 relative overflow-hidden">
       
       {/* Background soft red glow */}
-      <div className="absolute bottom-0 right-0 w-[300px] h-[300px] bg-luxury-red/5 blur-[90px] pointer-events-none" />
+      <motion.div
+        style={{ y: glowY }}
+        className="absolute bottom-0 right-0 w-[300px] h-[300px] bg-luxury-red/5 blur-[90px] pointer-events-none"
+      />
 
-      <div className="max-w-7xl mx-auto px-6 md:px-12 relative z-10">
+      <motion.div style={{ y: contentY }} className="max-w-7xl mx-auto px-6 md:px-12 relative z-10">
         
         {/* Main Footer Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 lg:gap-8 pb-16">
@@ -217,7 +218,7 @@ export default function Footer() {
           </button>
         </div>
 
-      </div>
+      </motion.div>
     </footer>
   );
 }

@@ -1,33 +1,49 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import { useRef } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
+import { scrollToTarget } from '../utils/scroll';
 
 export default function Hero() {
+  const sectionRef = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start start', 'end start'],
+  });
+  const copyY = useTransform(scrollYProgress, [0, 1], [0, 48]);
+  const copyOpacity = useTransform(scrollYProgress, [0, 0.85], [1, 0.45]);
+  const glowTopY = useTransform(scrollYProgress, [0, 1], [0, 70]);
+  const glowBottomY = useTransform(scrollYProgress, [0, 1], [0, -45]);
+  const mainImageY = useTransform(scrollYProgress, [0, 1], [0, -58]);
+  const leftImageY = useTransform(scrollYProgress, [0, 1], [0, 36]);
+  const rightImageY = useTransform(scrollYProgress, [0, 1], [0, -32]);
+  const frameY = useTransform(scrollYProgress, [0, 1], [0, 20]);
+
   const handleScrollTo = (id) => {
-    const targetElement = document.querySelector(id);
-    if (targetElement) {
-      const offset = 80;
-      const elementPosition = targetElement.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.pageYOffset - offset;
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: 'smooth'
-      });
-    }
+    scrollToTarget(id);
   };
 
   return (
     <section 
+      ref={sectionRef}
       id="home" 
       className="relative min-h-[90vh] lg:min-h-screen bg-luxury-black flex items-center pt-24 pb-16 overflow-hidden"
     >
       {/* Subtle red background ambient glows */}
-      <div className="absolute top-1/4 right-1/4 w-[500px] h-[500px] rounded-full bg-luxury-red/5 blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-1/4 left-1/12 w-[300px] h-[300px] rounded-full bg-luxury-red/5 blur-[90px] pointer-events-none" />
+      <motion.div
+        style={{ y: glowTopY }}
+        className="absolute top-1/4 right-1/4 w-[500px] h-[500px] rounded-full bg-luxury-red/5 blur-[120px] pointer-events-none"
+      />
+      <motion.div
+        style={{ y: glowBottomY }}
+        className="absolute bottom-1/4 left-1/12 w-[300px] h-[300px] rounded-full bg-luxury-red/5 blur-[90px] pointer-events-none"
+      />
 
       <div className="max-w-7xl mx-auto px-6 md:px-12 w-full grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center z-10">
         
         {/* Left Side: Cinematic Editorial Typography */}
-        <div className="lg:col-span-6 flex flex-col justify-center text-left">
+        <motion.div
+          style={{ y: copyY, opacity: copyOpacity }}
+          className="lg:col-span-6 flex flex-col justify-center text-left"
+        >
           {/* Subtle label */}
           <motion.div
             initial={{ opacity: 0, y: 15 }}
@@ -86,23 +102,22 @@ export default function Hero() {
               Reserve Table
             </button>
           </motion.div>
-        </div>
+        </motion.div>
 
         {/* Right Side: Layered Photographic Collage */}
         <div className="hidden lg:flex lg:col-span-6 relative h-[450px] md:h-[600px] w-full items-center justify-center mt-8 lg:mt-0">
           
           {/* Main central image (Grilled Herb Chicken) */}
           <motion.div
+            style={{ y: mainImageY }}
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ 
               opacity: 1, 
-              scale: 1,
-              y: [0, -12, 0]
+              scale: 1
             }}
             transition={{ 
               opacity: { duration: 1.2, delay: 0.3 },
-              scale: { duration: 1.2, delay: 0.3 },
-              y: { duration: 6, repeat: Infinity, ease: "easeInOut" }
+              scale: { duration: 1.2, delay: 0.3 }
             }}
             className="absolute w-[60%] md:w-[55%] aspect-square z-20 shadow-2xl border border-luxury-ivory/10 group overflow-hidden"
           >
@@ -116,16 +131,15 @@ export default function Hero() {
 
           {/* Overlay Left Image: Chef Plating */}
           <motion.div
+            style={{ y: leftImageY }}
             initial={{ opacity: 0, x: -30 }}
             animate={{ 
               opacity: 0.85, 
-              x: 0,
-              y: [0, 10, 0]
+              x: 0
             }}
             transition={{ 
               opacity: { duration: 1.2, delay: 0.5 },
-              x: { duration: 1.2, delay: 0.5 },
-              y: { duration: 8, repeat: Infinity, ease: "easeInOut", delay: 0.5 }
+              x: { duration: 1.2, delay: 0.5 }
             }}
             className="absolute left-0 md:left-4 top-[15%] w-[42%] aspect-square z-10 shadow-xl border border-luxury-ivory/5 group overflow-hidden"
           >
@@ -139,16 +153,15 @@ export default function Hero() {
 
           {/* Overlay Right Image: Restaurant Atmosphere */}
           <motion.div
+            style={{ y: rightImageY }}
             initial={{ opacity: 0, x: 30 }}
             animate={{ 
               opacity: 0.85, 
-              x: 0,
-              y: [0, -8, 0]
+              x: 0
             }}
             transition={{ 
               opacity: { duration: 1.2, delay: 0.7 },
-              x: { duration: 1.2, delay: 0.7 },
-              y: { duration: 7, repeat: Infinity, ease: "easeInOut", delay: 1 }
+              x: { duration: 1.2, delay: 0.7 }
             }}
             className="absolute right-0 md:right-4 bottom-[15%] w-[45%] aspect-[4/5] z-30 shadow-2xl border border-luxury-ivory/5 group overflow-hidden"
           >
@@ -162,6 +175,7 @@ export default function Hero() {
 
           {/* Editorial border frame decorator */}
           <motion.div
+            style={{ y: frameY }}
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 0.15, scale: 1 }}
             transition={{ delay: 1.0, duration: 1.2 }}

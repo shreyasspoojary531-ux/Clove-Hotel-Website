@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Quote } from 'lucide-react';
 
 const reviews = [
@@ -24,6 +24,13 @@ const reviews = [
 ];
 
 export default function Testimonials() {
+  const sectionRef = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start end', 'end start'],
+  });
+  const contentY = useTransform(scrollYProgress, [0, 0.5, 1], [26, 0, -26]);
+  const glowY = useTransform(scrollYProgress, [0, 1], [42, -38]);
   const [activeIndex, setActiveIndex] = useState(0);
   const [direction, setDirection] = useState(0); // -1 for left, 1 for right
 
@@ -62,13 +69,17 @@ export default function Testimonials() {
 
   return (
     <section 
+      ref={sectionRef}
       id="reviews" 
       className="bg-luxury-black text-luxury-ivory py-24 md:py-36 relative overflow-hidden"
     >
       {/* Background red glow */}
-      <div className="absolute top-1/3 left-1/4 w-[400px] h-[400px] bg-luxury-red/5 blur-[120px] pointer-events-none" />
+      <motion.div
+        style={{ y: glowY }}
+        className="absolute top-1/3 left-1/4 w-[400px] h-[400px] bg-luxury-red/5 blur-[120px] pointer-events-none"
+      />
 
-      <div className="max-w-5xl mx-auto px-6 md:px-12 relative z-10">
+      <motion.div style={{ y: contentY }} className="max-w-5xl mx-auto px-6 md:px-12 relative z-10">
         
         {/* Section label */}
         <div className="text-center mb-12">
@@ -164,7 +175,7 @@ export default function Testimonials() {
 
         </div>
 
-      </div>
+      </motion.div>
     </section>
   );
 }

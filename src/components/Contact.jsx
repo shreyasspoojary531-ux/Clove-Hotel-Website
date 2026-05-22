@@ -1,9 +1,16 @@
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useRef, useState } from 'react';
+import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 const motionFramer = motion;
 import { Phone, Mail, MapPin, Calendar, Clock, Users, CheckCircle } from 'lucide-react';
 
 export default function Contact() {
+  const sectionRef = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start end', 'end start'],
+  });
+  const contentY = useTransform(scrollYProgress, [0, 0.5, 1], [28, 0, -28]);
+  const glowY = useTransform(scrollYProgress, [0, 1], [42, -42]);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -48,13 +55,17 @@ export default function Contact() {
 
   return (
     <section 
+      ref={sectionRef}
       id="contact" 
       className="bg-luxury-black text-luxury-ivory py-24 md:py-36 relative overflow-hidden"
     >
       {/* Background glow */}
-      <div className="absolute top-1/2 right-0 w-[450px] h-[450px] bg-luxury-red/5 blur-[120px] pointer-events-none" />
+      <motion.div
+        style={{ y: glowY }}
+        className="absolute top-1/2 right-0 w-[450px] h-[450px] bg-luxury-red/5 blur-[120px] pointer-events-none"
+      />
 
-      <div className="max-w-7xl mx-auto px-6 md:px-12 relative z-10">
+      <motion.div style={{ y: contentY }} className="max-w-7xl mx-auto px-6 md:px-12 relative z-10">
         
         {/* Grid layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-12 items-start">
@@ -402,7 +413,7 @@ export default function Contact() {
 
         </div>
 
-      </div>
+      </motion.div>
     </section>
   );
 }

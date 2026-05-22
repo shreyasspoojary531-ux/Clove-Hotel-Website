@@ -1,5 +1,5 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import { useRef } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
 
 const row1Images = [
   { src: '/images/restaurant_interior.png', alt: 'Clove Warm Candlelit Ambience' },
@@ -20,15 +20,28 @@ const row2Images = [
 ];
 
 export default function GalleryMarquee() {
+  const sectionRef = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start end', 'end start'],
+  });
+  const headerY = useTransform(scrollYProgress, [0, 0.5, 1], [24, 0, -24]);
+  const rowsY = useTransform(scrollYProgress, [0, 0.5, 1], [18, 0, -34]);
+  const glowY = useTransform(scrollYProgress, [0, 1], [42, -42]);
+
   return (
     <section 
+      ref={sectionRef}
       id="vibe" 
       className="bg-luxury-black py-24 relative overflow-hidden"
     >
       {/* Light background red ambient glow */}
-      <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-luxury-red/5 blur-[120px] pointer-events-none" />
+      <motion.div
+        style={{ y: glowY }}
+        className="absolute top-0 right-0 w-[400px] h-[400px] bg-luxury-red/5 blur-[120px] pointer-events-none"
+      />
 
-      <div className="max-w-7xl mx-auto px-6 md:px-12 mb-16 text-left">
+      <motion.div style={{ y: headerY }} className="max-w-7xl mx-auto px-6 md:px-12 mb-16 text-left">
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           whileInView={{ opacity: 0.8, y: 0 }}
@@ -51,10 +64,10 @@ export default function GalleryMarquee() {
         >
           Restaurant <span className="font-serif-cormorant italic text-luxury-red">Vibes</span>
         </motion.h2>
-      </div>
+      </motion.div>
 
       {/* Marquee Rows Wrapper with gradient masks */}
-      <div className="w-full relative flex flex-col gap-6 md:gap-8 mask-fade-edges">
+      <motion.div style={{ y: rowsY }} className="w-full relative flex flex-col gap-6 md:gap-8 mask-fade-edges">
         
         {/* Top Row - Scrolls Left */}
         <div className="w-full overflow-hidden flex select-none">
@@ -128,7 +141,7 @@ export default function GalleryMarquee() {
           </div>
         </div>
 
-      </div>
+      </motion.div>
     </section>
   );
 }

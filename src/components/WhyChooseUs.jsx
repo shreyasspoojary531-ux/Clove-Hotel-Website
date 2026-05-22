@@ -1,5 +1,5 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import { useRef } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { Utensils, Compass, Leaf, Sparkles } from 'lucide-react';
 
 const reasons = [
@@ -52,15 +52,27 @@ const cardVariants = {
 };
 
 export default function WhyChooseUs() {
+  const sectionRef = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start end', 'end start'],
+  });
+  const contentY = useTransform(scrollYProgress, [0, 0.5, 1], [28, 0, -28]);
+  const glowY = useTransform(scrollYProgress, [0, 1], [40, -42]);
+
   return (
     <section 
+      ref={sectionRef}
       id="why-us" 
       className="bg-luxury-black text-luxury-ivory py-24 md:py-36 relative overflow-hidden"
     >
       {/* Background soft red glow */}
-      <div className="absolute bottom-0 left-0 w-[350px] h-[350px] bg-luxury-red/5 blur-[100px] pointer-events-none" />
+      <motion.div
+        style={{ y: glowY }}
+        className="absolute bottom-0 left-0 w-[350px] h-[350px] bg-luxury-red/5 blur-[100px] pointer-events-none"
+      />
 
-      <div className="max-w-7xl mx-auto px-6 md:px-12 relative z-10">
+      <motion.div style={{ y: contentY }} className="max-w-7xl mx-auto px-6 md:px-12 relative z-10">
         
         {/* Section Heading */}
         <div className="text-left mb-16 md:mb-24">
@@ -131,7 +143,7 @@ export default function WhyChooseUs() {
           })}
         </motion.div>
 
-      </div>
+      </motion.div>
     </section>
   );
 }

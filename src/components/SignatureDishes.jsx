@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useRef } from 'react';
+import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
+import { scrollToTarget } from '../utils/scroll';
 
 const dishes = [
   {
@@ -58,16 +59,47 @@ const dishes = [
   }
 ];
 
+const dishGridVariants = {
+  hidden: {},
+  show: {
+    transition: {
+      staggerChildren: 0.08,
+      delayChildren: 0.1,
+    },
+  },
+};
+
+const dishCardVariants = {
+  hidden: { opacity: 0, y: 34 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.72, ease: [0.22, 1, 0.36, 1] },
+  },
+};
+
 export default function SignatureDishes({ onViewFullMenu }) {
+  const sectionRef = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start end', 'end start'],
+  });
+  const contentY = useTransform(scrollYProgress, [0, 0.5, 1], [28, 0, -28]);
+  const glowY = useTransform(scrollYProgress, [0, 1], [46, -46]);
+
   return (
     <section 
+      ref={sectionRef}
       id="menu" 
       className="bg-luxury-black text-luxury-ivory py-24 md:py-36 relative overflow-hidden"
     >
       {/* Light background red ambient glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-luxury-red/5 blur-[130px] pointer-events-none" />
+      <motion.div
+        style={{ y: glowY }}
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-luxury-red/5 blur-[130px] pointer-events-none"
+      />
 
-      <div className="max-w-7xl mx-auto px-6 md:px-12 relative z-10">
+      <motion.div style={{ y: contentY }} className="max-w-7xl mx-auto px-6 md:px-12 relative z-10">
         
         {/* Section Heading */}
         <div className="text-center max-w-2xl mx-auto mb-16">
@@ -110,16 +142,18 @@ export default function SignatureDishes({ onViewFullMenu }) {
         {/* Dishes Grid */}
         <motion.div 
           layout
+          variants={dishGridVariants}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: "-120px" }}
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 xl:gap-10"
         >
           <AnimatePresence mode="popLayout">
             {dishes.map((dish) => (
               <motion.div
                 layout
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
+                variants={dishCardVariants}
                 exit={{ opacity: 0, scale: 0.9, filter: 'blur(4px)' }}
-                transition={{ duration: 0.6, ease: [0.215, 0.61, 0.355, 1] }}
                 key={dish.id}
                 className="group flex flex-col bg-luxury-charcoal/40 border border-luxury-ivory/5 shadow-xl hover:border-luxury-red/20 transition-colors duration-500 p-5 rounded-sm relative overflow-hidden"
               >
@@ -171,10 +205,7 @@ export default function SignatureDishes({ onViewFullMenu }) {
                       href="#contact" 
                       onClick={(e) => {
                         e.preventDefault();
-                        const contactSec = document.querySelector('#contact');
-                        if (contactSec) {
-                          contactSec.scrollIntoView({ behavior: 'smooth' });
-                        }
+                        scrollToTarget('#contact');
                       }}
                       className="text-[9px] uppercase tracking-[0.25em] text-luxury-ivory group-hover:text-luxury-red border-b border-transparent group-hover:border-luxury-red transition-all duration-300"
                     >
@@ -221,7 +252,7 @@ export default function SignatureDishes({ onViewFullMenu }) {
           </p>
         </motion.div>
 
-      </div>
+      </motion.div>
     </section>
   );
 }

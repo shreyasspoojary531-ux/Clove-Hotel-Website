@@ -1,14 +1,22 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import { useRef } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
 
 export default function About() {
+  const sectionRef = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start end', 'end start'],
+  });
+  const contentY = useTransform(scrollYProgress, [0, 0.5, 1], [28, 0, -28]);
+
   return (
     <section 
+      ref={sectionRef}
       id="about" 
       className="bg-luxury-ivory text-luxury-black py-24 md:py-36 relative overflow-hidden"
     >
       {/* Editorial grid container */}
-      <div className="max-w-7xl mx-auto px-6 md:px-12">
+      <motion.div style={{ y: contentY }} className="max-w-7xl mx-auto px-6 md:px-12">
         
         {/* Top Header Row */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-16 md:mb-24">
@@ -154,7 +162,7 @@ export default function About() {
 
         </div>
 
-      </div>
+      </motion.div>
     </section>
   );
 }

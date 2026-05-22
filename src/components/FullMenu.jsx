@@ -1,6 +1,7 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft } from 'lucide-react';
+import { scrollToTop } from '../utils/scroll';
 
 const menuData = [
   {
@@ -254,9 +255,27 @@ const sectionVariants = {
   },
 };
 
+const itemVariants = {
+  hidden: { opacity: 0, y: 10 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.42, ease: [0.22, 1, 0.36, 1] },
+  },
+};
+
+const itemContainerVariants = {
+  hidden: {},
+  show: {
+    transition: {
+      staggerChildren: 0.018,
+    },
+  },
+};
+
 export default function FullMenu({ onBack }) {
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'instant' });
+    scrollToTop();
   }, []);
 
   return (
@@ -357,10 +376,11 @@ export default function FullMenu({ onBack }) {
                     </th>
                   </tr>
                 </thead>
-                <tbody>
+                <motion.tbody variants={itemContainerVariants}>
                   {section.items.map((item, idx) => (
-                    <tr
+                    <motion.tr
                       key={`${section.category}-${idx}`}
+                      variants={itemVariants}
                       className="border-b border-luxury-ivory/[0.03] last:border-b-0 hover:bg-luxury-red/[0.03] transition-colors duration-300"
                     >
                       <td className="px-5 py-3.5 text-sm font-light text-luxury-ivory/90">
@@ -369,9 +389,9 @@ export default function FullMenu({ onBack }) {
                       <td className="px-5 py-3.5 text-sm font-mono text-luxury-red text-right whitespace-nowrap">
                         {item.price}
                       </td>
-                    </tr>
+                    </motion.tr>
                   ))}
-                </tbody>
+                </motion.tbody>
               </table>
             </div>
           </motion.div>

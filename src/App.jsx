@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
@@ -10,12 +10,15 @@ import Testimonials from './components/Testimonials';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
 import FullMenu from './components/FullMenu';
+import SmoothScroll from './components/SmoothScroll';
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState('home');
 
   return (
     <>
+      <SmoothScroll />
+
       {/* Subtle cinematic grain texture overlay */}
       <div className="noise-overlay" />
 
